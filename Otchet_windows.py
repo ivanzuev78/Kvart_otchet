@@ -1,13 +1,13 @@
 import json
-
-from Otchet_class import Cunductor
-from PyQt5 import uic, QtWidgets, QtGui
-from PyQt5.QtWidgets import QTableWidgetItem, QFileDialog
-from PyQt5.QtCore import QDate
+import os
 from copy import copy
 from time import localtime, struct_time
-import os
-import pickle
+
+from PyQt5 import QtGui, QtWidgets, uic
+from PyQt5.QtCore import QDate
+from PyQt5.QtWidgets import QFileDialog, QTableWidgetItem
+
+from Otchet_class import Cunductor
 
 
 # Главное окно
@@ -15,10 +15,13 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
     """
     Главное окно
     """
-    kvartal_dict = {1: {'start': [1, 1], 'end': [3, 31]},
-                    2: {'start': [4, 1], 'end': [6, 30]},
-                    3: {'start': [7, 1], 'end': [9, 30]},
-                    4: {'start': [10, 1], 'end': [12, 31]}}
+
+    kvartal_dict = {
+        1: {"start": [1, 1], "end": [3, 31]},
+        2: {"start": [4, 1], "end": [6, 30]},
+        3: {"start": [7, 1], "end": [9, 30]},
+        4: {"start": [10, 1], "end": [12, 31]},
+    }
 
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -49,7 +52,9 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
         self.checkBox_date.clicked.connect(self.date_changer)
         self.change_date_but.setEnabled(False)
 
-        self.show_data.setSizeAdjustPolicy(QtWidgets.QAbstractScrollArea.AdjustToContents)
+        self.show_data.setSizeAdjustPolicy(
+            QtWidgets.QAbstractScrollArea.AdjustToContents
+        )
         self.path_program = os.getcwd()
 
         self.set_kvartal()
@@ -95,12 +100,12 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
 
     # Кнопка "Считать данные"
     def read_data(self):
-        self.current_action.setText('Считывание данных')
+        self.current_action.setText("Считывание данных")
         for process, text in self.counductor.reader():
             self.progressBar.setValue(process)
             self.current_action.setText(text)
 
-        self.current_action.setText('Данные считаны')
+        self.current_action.setText("Данные считаны")
 
     # Кнопка "Обновить данные"
     def update_it(self):
@@ -112,11 +117,31 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
         self.show_data.setRowCount(len(self.counductor.thems))
         for row, tema in enumerate(self.counductor.thems):
             self.show_data.setItem(row, 0, QTableWidgetItem(f"{tema}"))
-            self.show_data.setItem(row, 1, QTableWidgetItem(f"{self.counductor.thems[tema].total_sintes_count} | "
-                                                            f"{self.counductor.thems[tema].total_sintes_mass} кг"))
-            self.show_data.setItem(row, 2, QTableWidgetItem(f"     {self.counductor.thems[tema].total_obraz}"))
-            self.show_data.setItem(row, 3, QTableWidgetItem(f"      {self.counductor.thems[tema].total_otchet}"))
-            self.show_data.setItem(row, 4, QTableWidgetItem(f"        {self.counductor.thems[tema].total_nanesenie}"))
+            self.show_data.setItem(
+                row,
+                1,
+                QTableWidgetItem(
+                    f"{self.counductor.thems[tema].total_sintes_count} | "
+                    f"{self.counductor.thems[tema].total_sintes_mass} кг"
+                ),
+            )
+            self.show_data.setItem(
+                row,
+                2,
+                QTableWidgetItem(f"     {self.counductor.thems[tema].total_obraz}"),
+            )
+            self.show_data.setItem(
+                row,
+                3,
+                QTableWidgetItem(f"      {self.counductor.thems[tema].total_otchet}"),
+            )
+            self.show_data.setItem(
+                row,
+                4,
+                QTableWidgetItem(
+                    f"        {self.counductor.thems[tema].total_nanesenie}"
+                ),
+            )
             self.progressBar.setValue(100)
 
         self.show_data.resizeColumnsToContents()
@@ -124,60 +149,74 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
     # Функция считывания обновления дат
     def update_date(self):
         if self.personal_date:
-            self.counductor.change_date(self.date_window.start_date_numb, self.date_window.end_date_numb)
+            self.counductor.change_date(
+                self.date_window.start_date_numb, self.date_window.end_date_numb
+            )
             pass
         else:
             self.year_numb = self.year.date().year()
             self.kvartal_numb = self.kvartal.currentIndex() + 1
-            self.counductor.change_date([self.year_numb] + self.kvartal_dict[self.kvartal_numb]['start'],
-                                        [self.year_numb] + self.kvartal_dict[self.kvartal_numb]['end'])
+            self.counductor.change_date(
+                [self.year_numb] + self.kvartal_dict[self.kvartal_numb]["start"],
+                [self.year_numb] + self.kvartal_dict[self.kvartal_numb]["end"],
+            )
 
     # Создает отчёт с именами
     def make_xl(self):
         try:
-            path = self.counductor.make_excel(self.kvartal_numb, self.year_numb, self.personal_date)
-            self.current_action.setText('Отчёт сформирован')
+            path = self.counductor.make_excel(
+                self.kvartal_numb, self.year_numb, self.personal_date
+            )
+            self.current_action.setText("Отчёт сформирован")
             if self.open_check.isChecked():
                 os.startfile(path)
         except:
-            self.current_action.setText('Закройте файл Excel')
+            self.current_action.setText("Закройте файл Excel")
 
     # Создает отчёт без имён
     def make_xl_noname(self):
         try:
-            path = self.counductor.make_excel_noname(self.kvartal_numb, self.year_numb, self.personal_date)
-            self.current_action.setText('Отчёт сформирован')
+            path = self.counductor.make_excel_noname(
+                self.kvartal_numb, self.year_numb, self.personal_date
+            )
+            self.current_action.setText("Отчёт сформирован")
             if self.open_check_2.isChecked():
                 os.startfile(path)
         except:
-            self.current_action.setText('Закройте файл Excel')
+            self.current_action.setText("Закройте файл Excel")
 
     # Загружает настройки
     def load_settings(self):
-        if os.path.exists('settings.json'):
+        if os.path.exists("settings.json"):
             try:
-                with open('settings.json', 'r') as f:
+                with open("settings.json", "r") as f:
 
                     to_load = json.load(f)
 
-                    self.counductor.ignor_tema = to_load['ignor_tema']
-                    self.counductor.ignor_names = to_load['ignor_names']
-                    self.counductor.text_of_tema_noname = to_load['text_of_tema_noname']
-                    self.counductor.text_of_tema = to_load['text_of_tema']
-                    self.counductor.global_tems = to_load['global_tems']
-                    self.counductor.svodnaya_name_file = to_load['svodnaya_name_file']
-                    self.counductor.production_name_file = to_load['production_name_file']
-                    self.counductor.report_name_file = to_load['report_name_file']
-                    self.counductor.sintez_name_file = to_load['sintez_name_file']
-                    self.counductor.thems_replased = to_load['thems_replased']
-                    self.counductor.good_names = to_load['good_names']
+                    self.counductor.ignor_tema = to_load["ignor_tema"]
+                    self.counductor.ignor_names = to_load["ignor_names"]
+                    self.counductor.text_of_tema_noname = to_load["text_of_tema_noname"]
+                    self.counductor.text_of_tema = to_load["text_of_tema"]
+                    self.counductor.global_tems = to_load["global_tems"]
+                    self.counductor.svodnaya_name_file = to_load["svodnaya_name_file"]
+                    self.counductor.production_name_file = to_load[
+                        "production_name_file"
+                    ]
+                    self.counductor.report_name_file = to_load["report_name_file"]
+                    self.counductor.sintez_name_file = to_load["sintez_name_file"]
+                    self.counductor.thems_replased = to_load["thems_replased"]
+                    self.counductor.good_names = to_load["good_names"]
 
             except:
                 self.error_dialog = QtWidgets.QErrorMessage()
-                self.error_dialog.showMessage('Ошибка загрузки настроек. Установленны настройки по умолчанию')
+                self.error_dialog.showMessage(
+                    "Ошибка загрузки настроек. Установленны настройки по умолчанию"
+                )
         else:
             self.error_dialog = QtWidgets.QErrorMessage()
-            self.error_dialog.showMessage('Файл с настройками \"settings.json\" не найдет. Установленны настройки по умолчанию')
+            self.error_dialog.showMessage(
+                'Файл с настройками "settings.json" не найдет. Установленны настройки по умолчанию'
+            )
 
     # Устанавливает нужный квартал при запуске программы
     def set_kvartal(self):
@@ -202,19 +241,20 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
 
     # Сохраняет настройки
     def save_settings(self):
-        to_save = {'ignor_tema': self.counductor.ignor_tema,
-                   'ignor_names': self.counductor.ignor_names,
-                   'text_of_tema_noname': self.counductor.text_of_tema_noname,
-                   'text_of_tema': self.counductor.text_of_tema,
-                   'global_tems': self.counductor.global_tems,
-                   'svodnaya_name_file': self.counductor.svodnaya_name_file,
-                   'production_name_file': self.counductor.production_name_file,
-                   'report_name_file': self.counductor.report_name_file,
-                   'sintez_name_file': self.counductor.sintez_name_file,
-                   'thems_replased': self.counductor.thems_replased,
-                   'good_names': self.counductor.good_names
-                   }
-        with open('settings.json', 'w') as f:
+        to_save = {
+            "ignor_tema": self.counductor.ignor_tema,
+            "ignor_names": self.counductor.ignor_names,
+            "text_of_tema_noname": self.counductor.text_of_tema_noname,
+            "text_of_tema": self.counductor.text_of_tema,
+            "global_tems": self.counductor.global_tems,
+            "svodnaya_name_file": self.counductor.svodnaya_name_file,
+            "production_name_file": self.counductor.production_name_file,
+            "report_name_file": self.counductor.report_name_file,
+            "sintez_name_file": self.counductor.sintez_name_file,
+            "thems_replased": self.counductor.thems_replased,
+            "good_names": self.counductor.good_names,
+        }
+        with open("settings.json", "w") as f:
             json.dump(to_save, f, indent=4, ensure_ascii=False)
 
 
@@ -299,7 +339,9 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
     # Добавляет имя в игнор
     def add_ignor_name(self):
         try:
-            ignor_name = self.names_widget.takeItem(self.names_widget.currentRow()).text()
+            ignor_name = self.names_widget.takeItem(
+                self.names_widget.currentRow()
+            ).text()
             self.main_window.counductor.ignor_names.append(ignor_name)
             self.ignore_name_wg.addItem(ignor_name)
         except:
@@ -308,8 +350,12 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
     # Убирает имя из игнора
     def remove_ignor_name(self):
         try:
-            ignor_name = self.ignore_name_wg.takeItem(self.ignore_name_wg.currentRow()).text()
-            del self.main_window.counductor.ignor_names[self.main_window.counductor.ignor_names.index(ignor_name)]
+            ignor_name = self.ignore_name_wg.takeItem(
+                self.ignore_name_wg.currentRow()
+            ).text()
+            del self.main_window.counductor.ignor_names[
+                self.main_window.counductor.ignor_names.index(ignor_name)
+            ]
             self.names_widget.addItem(ignor_name)
         except:
             pass
@@ -327,20 +373,32 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
     # Удаляет тему из игнора
     def remove_ignor_tema(self):
         try:
-            tema_to_del = self.ignore_tems.takeItem(self.ignore_tems.currentRow()).text()
-            self.main_window.counductor.ignor_tema.pop(self.main_window.counductor.ignor_tema.index(tema_to_del))
-            self.unkown_tema.addItem(tema_to_del)
+            tema_to_del = self.ignore_tems.takeItem(
+                self.ignore_tems.currentRow()
+            ).text()
+            self.main_window.counductor.ignor_tema.pop(
+                self.main_window.counductor.ignor_tema.index(tema_to_del)
+            )
+            self.main_window.counductor.current_ignor_tema.pop(
+                self.main_window.counductor.current_ignor_tema.index(tema_to_del)
+            )
+            if tema_to_del in self.main_window.counductor.all_thems:
+                self.unkown_tema.addItem(tema_to_del)
         except:
             pass
 
     # Добавляет глобальную тему
     def add_global_tema(self):
-        if self.tema_add_line.text() and str(self.tema_add_line.text()) not in self.main_window.counductor.global_tems:
+        if (
+            self.tema_add_line.text()
+            and str(self.tema_add_line.text())
+            not in self.main_window.counductor.global_tems
+        ):
             global_tema = self.tema_add_line.text()
             self.official_tems.addItem(global_tema)
             self.main_window.counductor.global_tems[global_tema] = []
 
-        self.tema_add_line.setText('')
+        self.tema_add_line.setText("")
 
     # Удаляет глобальную тему
     def remove_global_tema(self):
@@ -365,7 +423,9 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
         try:
             global_tema = self.official_tems.selectedItems()[0].text()
             if global_tema:
-                tema_fly = self.unkown_tema.takeItem(self.unkown_tema.currentRow()).text()
+                tema_fly = self.unkown_tema.takeItem(
+                    self.unkown_tema.currentRow()
+                ).text()
                 self.main_window.counductor.thems_replased[tema_fly] = global_tema
                 self.main_window.counductor.global_tems[global_tema].append(tema_fly)
                 self.update_not_official_tems()
@@ -378,12 +438,15 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
         try:
             global_tema = self.official_tems.selectedItems()[0].text()
             if self.not_official_tems.selectedItems()[0].text():
-                tema_fly = self.not_official_tems.takeItem(self.not_official_tems.currentRow()).text()
+                tema_fly = self.not_official_tems.takeItem(
+                    self.not_official_tems.currentRow()
+                ).text()
 
                 del self.main_window.counductor.thems_replased[tema_fly]
 
                 self.main_window.counductor.global_tems[global_tema].pop(
-                    self.main_window.counductor.global_tems[global_tema].index(tema_fly))
+                    self.main_window.counductor.global_tems[global_tema].index(tema_fly)
+                )
 
                 self.unkown_tema.addItem(tema_fly)
         except:
@@ -404,15 +467,17 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
 
                 if global_tema in self.main_window.counductor.text_of_tema:
                     self.wd_text_of_tema.setPlainText(
-                        self.main_window.counductor.text_of_tema[global_tema])
+                        self.main_window.counductor.text_of_tema[global_tema]
+                    )
                 else:
-                    self.wd_text_of_tema.setPlainText('')
+                    self.wd_text_of_tema.setPlainText("")
 
                 if global_tema in self.main_window.counductor.text_of_tema_noname:
                     self.wd_text_of_tema_noname.setPlainText(
-                        self.main_window.counductor.text_of_tema_noname[global_tema])
+                        self.main_window.counductor.text_of_tema_noname[global_tema]
+                    )
                 else:
-                    self.wd_text_of_tema_noname.setPlainText('')
+                    self.wd_text_of_tema_noname.setPlainText("")
         except:
             pass
 
@@ -421,11 +486,13 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
 
         if self.official_tems.selectedItems():
             if self.wd_text_of_tema.toPlainText():
-                self.main_window.counductor.text_of_tema[self.official_tems.selectedItems()[0].text()] = \
-                    self.wd_text_of_tema.toPlainText()
+                self.main_window.counductor.text_of_tema[
+                    self.official_tems.selectedItems()[0].text()
+                ] = self.wd_text_of_tema.toPlainText()
             if self.wd_text_of_tema_noname.toPlainText():
-                self.main_window.counductor.text_of_tema_noname[self.official_tems.selectedItems()[0].text()] = \
-                    self.wd_text_of_tema_noname.toPlainText()
+                self.main_window.counductor.text_of_tema_noname[
+                    self.official_tems.selectedItems()[0].text()
+                ] = self.wd_text_of_tema_noname.toPlainText()
 
     def edit_names(self):
         if not self.edit_names_window:
@@ -442,43 +509,42 @@ class ChooseFile(QtWidgets.QMainWindow, uic.loadUiType("choose_file.ui")[0]):
         self.setupUi(self)
 
         # Соединяем кнопки с соответствующими функциями
-        self.choose_svod_wg.clicked.connect(self.choose_file('svod'))
-        self.choose_prod_wg.clicked.connect(self.choose_file('prod'))
-        self.choose_otchet_wg.clicked.connect(self.choose_file('otchet'))
-        self.choose_sintez_wg.clicked.connect(self.choose_file('sintez'))
+        self.choose_svod_wg.clicked.connect(self.choose_file("svod"))
+        self.choose_prod_wg.clicked.connect(self.choose_file("prod"))
+        self.choose_otchet_wg.clicked.connect(self.choose_file("otchet"))
+        self.choose_sintez_wg.clicked.connect(self.choose_file("sintez"))
 
         self.close_but.clicked.connect(self.close)
 
         # Прописываем текущие местоположения файлов в поля рядом с кнопками
-        self.label_svod.setText(f'{self.main_window.counductor.svodnaya_name_file}')
-        self.label_prod.setText(f'{self.main_window.counductor.production_name_file}')
-        self.label_otchet.setText(f'{self.main_window.counductor.report_name_file}')
-        self.label_sintez.setText(f'{self.main_window.counductor.sintez_name_file}')
+        self.label_svod.setText(f"{self.main_window.counductor.svodnaya_name_file}")
+        self.label_prod.setText(f"{self.main_window.counductor.production_name_file}")
+        self.label_otchet.setText(f"{self.main_window.counductor.report_name_file}")
+        self.label_sintez.setText(f"{self.main_window.counductor.sintez_name_file}")
 
     # Функиця, вызывающая окно выбора файла
     def choose_file(self, name_file):
-
         def wraper():
             headlines = {
-                'svod': "Выбрать файл сводной таблицы",
-                'prod': "Выбрать файл перечня продцкции ОВНТ",
-                'otchet': "Выбрать файл перечня отчётов",
-                'sintez': "Выбрать файл списка синтезов"
+                "svod": "Выбрать файл сводной таблицы",
+                "prod": "Выбрать файл перечня продцкции ОВНТ",
+                "otchet": "Выбрать файл перечня отчётов",
+                "sintez": "Выбрать файл списка синтезов",
             }
             filename, _ = QFileDialog.getOpenFileName(self, headlines[name_file])
             if filename:
-                if name_file == 'svod':
+                if name_file == "svod":
                     self.main_window.counductor.svodnaya_name_file = filename
-                    self.label_svod.setText(f'{filename}')
-                elif name_file == 'prod':
+                    self.label_svod.setText(f"{filename}")
+                elif name_file == "prod":
                     self.main_window.counductor.production_name_file = filename
-                    self.label_prod.setText(f'{filename}')
-                elif name_file == 'otchet':
+                    self.label_prod.setText(f"{filename}")
+                elif name_file == "otchet":
                     self.main_window.counductor.report_name_file = filename
-                    self.label_otchet.setText(f'{filename}')
-                elif name_file == 'sintez':
+                    self.label_otchet.setText(f"{filename}")
+                elif name_file == "sintez":
                     self.main_window.counductor.sintez_name_file = filename
-                    self.label_sintez.setText(f'{filename}')
+                    self.label_sintez.setText(f"{filename}")
 
         return wraper
 
@@ -500,10 +566,16 @@ class DateWindow(QtWidgets.QMainWindow, uic.loadUiType("Change_date.ui")[0]):
         self.end_date_numb = [2020, 12, 31]
 
     def save(self):
-        self.start_date_numb = [self.start_date.date().year(), self.start_date.date().month(),
-                                self.start_date.date().day()]
-        self.end_date_numb = [self.end_date.date().year(), self.end_date.date().month(),
-                              self.end_date.date().day()]
+        self.start_date_numb = [
+            self.start_date.date().year(),
+            self.start_date.date().month(),
+            self.start_date.date().day(),
+        ]
+        self.end_date_numb = [
+            self.end_date.date().year(),
+            self.end_date.date().month(),
+            self.end_date.date().day(),
+        ]
         self.main_window.update_date()
         self.close()
 
@@ -524,28 +596,39 @@ class EditNameWindow(QtWidgets.QMainWindow, uic.loadUiType("edit_names.ui")[0]):
         self.del_name_but.clicked.connect(self.del_name)
 
     def fill_table(self, names_len=None):
-        while self.all_names_widget.takeItem(0,0):
+        while self.all_names_widget.takeItem(0, 0):
             pass
         if names_len is None:
-            self.all_names_widget.setRowCount(len(self.settings_window.main_window.counductor.good_names))
+            self.all_names_widget.setRowCount(
+                len(self.settings_window.main_window.counductor.good_names)
+            )
         else:
             self.all_names_widget.setRowCount(names_len)
 
-        for row, name in enumerate(self.settings_window.main_window.counductor.good_names):
+        for row, name in enumerate(
+            self.settings_window.main_window.counductor.good_names
+        ):
             self.all_names_widget.setItem(row, 0, QTableWidgetItem(f"{name}"))
-            self.all_names_widget.setItem(row, 1, QTableWidgetItem(f"{self.settings_window.main_window.counductor.good_names[name]}"))
+            self.all_names_widget.setItem(
+                row,
+                1,
+                QTableWidgetItem(
+                    f"{self.settings_window.main_window.counductor.good_names[name]}"
+                ),
+            )
 
     def add_name(self):
         numb_of_names_now = len(self.settings_window.main_window.counductor.good_names)
         good_name = self.good_name.text()
         bad_name = self.bad_name.text()
-        self.fill_table(names_len = numb_of_names_now + 1)
-        self.all_names_widget.setItem(numb_of_names_now, 0, QTableWidgetItem(
-            f"{bad_name}"))
-        self.all_names_widget.setItem(numb_of_names_now, 1, QTableWidgetItem(
-            f"{good_name}"))
+        self.fill_table(names_len=numb_of_names_now + 1)
+        self.all_names_widget.setItem(
+            numb_of_names_now, 0, QTableWidgetItem(f"{bad_name}")
+        )
+        self.all_names_widget.setItem(
+            numb_of_names_now, 1, QTableWidgetItem(f"{good_name}")
+        )
         self.settings_window.main_window.counductor.good_names[bad_name] = good_name
-
 
     def del_name(self):
         try:
