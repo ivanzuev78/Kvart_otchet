@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>492</width>
-    <height>554</height>
+    <width>700</width>
+    <height>510</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>700</width>
+    <height>510</height>
+   </size>
   </property>
   <property name="windowTitle">
    <string>MainWindow</string>
@@ -17,30 +23,30 @@
    <widget class="QTableWidget" name="all_names_widget">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>20</y>
-      <width>321</width>
-      <height>321</height>
+      <x>420</x>
+      <y>50</y>
+      <width>261</width>
+      <height>331</height>
      </rect>
     </property>
     <column>
      <property name="text">
-      <string>Заменить</string>
+      <string>Неправильно</string>
      </property>
     </column>
     <column>
      <property name="text">
-      <string>Фамилия И.О.</string>
+      <string>Правильно</string>
      </property>
     </column>
    </widget>
    <widget class="QPushButton" name="save_but">
     <property name="geometry">
      <rect>
-      <x>290</x>
-      <y>470</y>
-      <width>101</width>
-      <height>31</height>
+      <x>570</x>
+      <y>440</y>
+      <width>111</width>
+      <height>41</height>
      </rect>
     </property>
     <property name="font">
@@ -52,96 +58,114 @@
      <string>Закрыть</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="bad_name">
+   <widget class="QPushButton" name="add_name_but">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>380</y>
-      <width>141</width>
-      <height>21</height>
+      <x>60</x>
+      <y>390</y>
+      <width>331</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Добавить замену имени</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="del_name_but">
+    <property name="geometry">
+     <rect>
+      <x>420</x>
+      <y>390</y>
+      <width>261</width>
+      <height>41</height>
+     </rect>
+    </property>
+    <property name="font">
+     <font>
+      <pointsize>12</pointsize>
+     </font>
+    </property>
+    <property name="text">
+     <string>Удалить замену имени</string>
+    </property>
+   </widget>
+   <widget class="QListWidget" name="bad_names">
+    <property name="geometry">
+     <rect>
+      <x>60</x>
+      <y>50</y>
+      <width>151</width>
+      <height>331</height>
      </rect>
     </property>
    </widget>
-   <widget class="QLineEdit" name="good_name">
+   <widget class="QListWidget" name="good_names">
     <property name="geometry">
      <rect>
-      <x>250</x>
-      <y>380</y>
-      <width>141</width>
-      <height>21</height>
+      <x>240</x>
+      <y>50</y>
+      <width>151</width>
+      <height>331</height>
      </rect>
     </property>
    </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>70</x>
-      <y>360</y>
-      <width>131</width>
-      <height>16</height>
+      <x>60</x>
+      <y>20</y>
+      <width>151</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>12</pointsize>
+      <pointsize>10</pointsize>
      </font>
     </property>
     <property name="text">
-     <string>Имя для замены</string>
+     <string>Неправильное имя</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
-      <x>250</x>
-      <y>360</y>
-      <width>121</width>
-      <height>16</height>
+      <x>240</x>
+      <y>20</y>
+      <width>151</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>12</pointsize>
+      <pointsize>10</pointsize>
      </font>
     </property>
     <property name="text">
-     <string>Фамилия И.О.</string>
+     <string>Правильное имя</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="add_name_but">
+   <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>250</x>
-      <y>410</y>
-      <width>141</width>
-      <height>31</height>
+      <x>430</x>
+      <y>20</y>
+      <width>151</width>
+      <height>20</height>
      </rect>
     </property>
     <property name="font">
      <font>
-      <pointsize>12</pointsize>
+      <pointsize>10</pointsize>
      </font>
     </property>
     <property name="text">
-     <string>Добавить имя</string>
-    </property>
-   </widget>
-   <widget class="QPushButton" name="del_name_but">
-    <property name="geometry">
-     <rect>
-      <x>70</x>
-      <y>410</y>
-      <width>141</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>12</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string>Удалить имя</string>
+     <string>Текущие замены</string>
     </property>
    </widget>
   </widget>

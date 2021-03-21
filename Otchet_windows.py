@@ -26,23 +26,17 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
     def __init__(self):
         super(MainWindow, self).__init__()
         self.setupUi(self)
-
-        self.unknown_themes = []
-        self.theme_list = {}
-        self.known_themes = []
-        self.ignore_name_list = []
-        self.ignore_tema_list = []
-        self.text_of_tema = {}
-        self.text_of_tema_noname = {}
+        self.counductor = Cunductor()
         self.read_xl = True
 
         self.year_numb = None
         self.kvartal_numb = None
         self.window = None
         self.file_settings_window = None
-        self.date_window = None
+        self.date_window = DateWindow(self)
         self.personal_date = False
-        self.update_bot.clicked.connect(self.update_it)
+        self.year.dateChanged.connect(self.update_it)
+        self.kvartal.currentIndexChanged.connect(self.update_it)
         self.make_xl_bot.clicked.connect(self.make_xl)
         self.make_xl_bot_2.clicked.connect(self.make_xl_noname)
         self.settings.clicked.connect(self.settings_window)
@@ -51,19 +45,13 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
         self.change_date_but.clicked.connect(self.change_date_window)
         self.checkBox_date.clicked.connect(self.date_changer)
         self.change_date_but.setEnabled(False)
-
         self.show_data.setSizeAdjustPolicy(
             QtWidgets.QAbstractScrollArea.AdjustToContents
         )
         self.path_program = os.getcwd()
-
         self.set_kvartal()
-        self.counductor = Cunductor()
         self.show()
         self.load_settings()
-
-    def debug(self):
-        pass
 
     def date_changer(self):
         if self.checkBox_date.isChecked():
@@ -76,18 +64,19 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
             self.year.setEnabled(True)
             self.kvartal.setEnabled(True)
             self.personal_date = False
+        self.update_it()
 
     # Вызывает окно настройки файла
     def file_settings(self):
         if not self.file_settings_window:
-            self.file_settings_window = ChooseFile(self)
+            self.file_settings_window = ChooseFileWindow(self)
         self.setEnabled(False)
         self.file_settings_window.show()
 
     # Вызывает окно настройки тем
     def settings_window(self):
         if not self.window:
-            self.window = SecondWindow(self)
+            self.window = SettingsWindow(self)
         self.setEnabled(False)
         self.window.show()
 
@@ -100,12 +89,38 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
 
     # Кнопка "Считать данные"
     def read_data(self):
-        self.current_action.setText("Считывание данных")
-        for process, text in self.counductor.reader():
-            self.progressBar.setValue(process)
-            self.current_action.setText(text)
+        if not os.path.exists(self.counductor.svodnaya_name_file):
+            self.file_settings()
+            self.error_dialog = QtWidgets.QErrorMessage()
+            self.error_dialog.showMessage(
+                "Ошибка чтения Сводной таблицы. Проверьте путь до файла."
+            )
+        elif not os.path.exists(self.counductor.production_name_file):
+            self.file_settings()
+            self.error_dialog = QtWidgets.QErrorMessage()
+            self.error_dialog.showMessage(
+                "Ошибка чтения Общего перечня продукции ОВНТ. Проверьте путь до файла."
+            )
+        elif not os.path.exists(self.counductor.report_name_file):
+            self.file_settings()
+            self.error_dialog = QtWidgets.QErrorMessage()
+            self.error_dialog.showMessage(
+                "Ошибка чтения Общего перечня отчётов. Проверьте путь до файла."
+            )
+        elif not os.path.exists(self.counductor.sintez_name_file):
+            self.file_settings()
+            self.error_dialog = QtWidgets.QErrorMessage()
+            self.error_dialog.showMessage(
+                "Ошибка чтения Списка синтезов. Проверьте путь до файла."
+            )
+        else:
+            self.current_action.setText("Считывание данных")
+            for process, text in self.counductor.reader():
+                self.progressBar.setValue(process)
+                self.current_action.setText(text)
 
-        self.current_action.setText("Данные считаны")
+            self.current_action.setText("Данные считаны")
+            self.update_it()
 
     # Кнопка "Обновить данные"
     def update_it(self):
@@ -170,7 +185,7 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
             self.current_action.setText("Отчёт сформирован")
             if self.open_check.isChecked():
                 os.startfile(path)
-        except:
+        except Exception as e:
             self.current_action.setText("Закройте файл Excel")
 
     # Создает отчёт без имён
@@ -259,10 +274,10 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
 
 
 # Окно настройки тем
-class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
-    def __init__(self, main_wind):
+class SettingsWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
+    def __init__(self, main_wind: MainWindow):
         self.main_window = main_wind
-        super(SecondWindow, self).__init__()
+        super(SettingsWindow, self).__init__()
         self.setupUi(self)
         self.edit_names_window = None
 
@@ -281,6 +296,9 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
 
     # Скрипт, запускаемый при показе окна
     def showEvent(self, a0: QtGui.QShowEvent) -> None:
+        self.update_all()
+
+    def update_all(self) -> None:
         self.clear_all()
         self.tema_navigator()
         self.update_names()
@@ -309,7 +327,7 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
 
     # Скрипт, который заполняет все поля при показе окна
     def tema_navigator(self):
-        for tema in self.main_window.counductor.thems:
+        for tema in sorted(self.main_window.counductor.thems):
             if tema in self.main_window.counductor.ignor_tema:
                 continue
 
@@ -326,15 +344,21 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
             self.official_tems.addItem(globa_tema)
 
         for ignor_tema in self.main_window.counductor.current_ignor_tema:
-            self.ignore_tems.addItem(ignor_tema)
+            if ignor_tema in self.main_window.counductor.all_thems:
+                self.ignore_tems.addItem(ignor_tema)
 
     # Заполняет окно с именами
     def update_names(self):
+
+        local_list_of_names = []
         for name in self.main_window.counductor.names:
             if name in self.main_window.counductor.ignor_names:
                 self.ignore_name_wg.addItem(name)
+            elif name in local_list_of_names:
+                continue
             else:
-                self.names_widget.addItem(self.main_window.counductor.input_name(name))
+                self.names_widget.addItem(name)
+                local_list_of_names.append(name)
 
     # Добавляет имя в игнор
     def add_ignor_name(self):
@@ -357,6 +381,7 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
                 self.main_window.counductor.ignor_names.index(ignor_name)
             ]
             self.names_widget.addItem(ignor_name)
+
         except:
             pass
 
@@ -364,8 +389,8 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
     def add_ignor_tema(self):
         try:
             tema_fly = self.unkown_tema.takeItem(self.unkown_tema.currentRow()).text()
-
             self.main_window.counductor.ignor_tema.append(tema_fly)
+            self.main_window.counductor.current_ignor_tema.append(tema_fly)
             self.ignore_tems.addItem(tema_fly)
         except:
             pass
@@ -462,8 +487,8 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
 
             if global_tema:
                 for tema in self.main_window.counductor.global_tems[global_tema]:
-                    # if tema in self.main_window.counductor.all_thems:
-                    self.not_official_tems.addItem(tema)
+                    if tema in self.main_window.counductor.all_thems:
+                        self.not_official_tems.addItem(tema)
 
                 if global_tema in self.main_window.counductor.text_of_tema:
                     self.wd_text_of_tema.setPlainText(
@@ -502,10 +527,10 @@ class SecondWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
 
 
 # Окно настройки пути поиска файлов
-class ChooseFile(QtWidgets.QMainWindow, uic.loadUiType("choose_file.ui")[0]):
+class ChooseFileWindow(QtWidgets.QMainWindow, uic.loadUiType("choose_file.ui")[0]):
     def __init__(self, main_wind):
         self.main_window = main_wind
-        super(ChooseFile, self).__init__()
+        super(ChooseFileWindow, self).__init__()
         self.setupUi(self)
 
         # Соединяем кнопки с соответствующими функциями
@@ -555,17 +580,17 @@ class ChooseFile(QtWidgets.QMainWindow, uic.loadUiType("choose_file.ui")[0]):
 
 
 # Окно изменения персональных дат
-class DateWindow(QtWidgets.QMainWindow, uic.loadUiType("Change_date.ui")[0]):
+class DateWindow(QtWidgets.QMainWindow, uic.loadUiType("change_date.ui")[0]):
     def __init__(self, main_wind: MainWindow):
         self.main_window = main_wind
         super(DateWindow, self).__init__()
         self.setupUi(self)
-        self.save_but.clicked.connect(self.save)
+        self.save_but.clicked.connect(self.save_date)
 
         self.start_date_numb = [2020, 1, 1]
         self.end_date_numb = [2020, 12, 31]
 
-    def save(self):
+    def save_date(self):
         self.start_date_numb = [
             self.start_date.date().year(),
             self.start_date.date().month(),
@@ -583,6 +608,7 @@ class DateWindow(QtWidgets.QMainWindow, uic.loadUiType("Change_date.ui")[0]):
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         self.main_window.setEnabled(True)
+        self.main_window.update_it()
 
 
 # Окно редактирования имён
@@ -617,10 +643,32 @@ class EditNameWindow(QtWidgets.QMainWindow, uic.loadUiType("edit_names.ui")[0]):
                 ),
             )
 
+    def fill_names(self):
+        while self.bad_names.takeItem(0):
+            pass
+        while self.good_names.takeItem(0):
+            pass
+
+        for name in self.settings_window.main_window.counductor.names:
+            if name not in self.settings_window.main_window.counductor.ignor_names:
+                self.bad_names.addItem(
+                    self.settings_window.main_window.counductor.input_name(name)
+                )
+                self.good_names.addItem(
+                    self.settings_window.main_window.counductor.input_name(name)
+                )
+
     def add_name(self):
         numb_of_names_now = len(self.settings_window.main_window.counductor.good_names)
-        good_name = self.good_name.text()
-        bad_name = self.bad_name.text()
+        try:
+            good_name = self.good_names.selectedItems()[0].text()
+            bad_name = self.bad_names.selectedItems()[0].text()
+        except Exception:
+            return None
+
+        if good_name == bad_name:
+            return None
+
         self.fill_table(names_len=numb_of_names_now + 1)
         self.all_names_widget.setItem(
             numb_of_names_now, 0, QTableWidgetItem(f"{bad_name}")
@@ -629,18 +677,29 @@ class EditNameWindow(QtWidgets.QMainWindow, uic.loadUiType("edit_names.ui")[0]):
             numb_of_names_now, 1, QTableWidgetItem(f"{good_name}")
         )
         self.settings_window.main_window.counductor.good_names[bad_name] = good_name
+        self.settings_window.main_window.counductor.names.pop(
+            self.settings_window.main_window.counductor.names.index(bad_name)
+        )
+        self.fill_names()
 
     def del_name(self):
         try:
             row = self.all_names_widget.currentRow()
             bad_name = self.all_names_widget.item(row, 0).text()
             del self.settings_window.main_window.counductor.good_names[bad_name]
+            self.settings_window.main_window.counductor.names.append(bad_name)
             self.fill_table()
+            self.fill_names()
         except:
             pass
 
     def showEvent(self, a0: QtGui.QShowEvent) -> None:
         self.fill_table()
+        self.fill_names()
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
         self.settings_window.setEnabled(True)
+        self.settings_window.clear_all()
+        self.settings_window.tema_navigator()
+        self.settings_window.update_names()
+        del self

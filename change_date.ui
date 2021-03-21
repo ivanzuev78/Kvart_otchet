@@ -6,9 +6,15 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>474</width>
-    <height>219</height>
+    <width>414</width>
+    <height>190</height>
    </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>414</width>
+    <height>190</height>
+   </size>
   </property>
   <property name="font">
    <font>
@@ -16,7 +22,7 @@
    </font>
   </property>
   <property name="windowTitle">
-   <string>MainWindow</string>
+   <string>Изменение даты</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QDateEdit" name="start_date">
@@ -24,8 +30,8 @@
      <rect>
       <x>60</x>
       <y>60</y>
-      <width>110</width>
-      <height>22</height>
+      <width>131</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="font">
@@ -46,37 +52,51 @@
     <property name="currentSection">
      <enum>QDateTimeEdit::DaySection</enum>
     </property>
+    <property name="date">
+     <date>
+      <year>2020</year>
+      <month>1</month>
+      <day>1</day>
+     </date>
+    </property>
    </widget>
    <widget class="QDateEdit" name="end_date">
     <property name="geometry">
      <rect>
-      <x>240</x>
+      <x>260</x>
       <y>60</y>
-      <width>110</width>
-      <height>22</height>
+      <width>131</width>
+      <height>31</height>
      </rect>
+    </property>
+    <property name="date">
+     <date>
+      <year>2021</year>
+      <month>1</month>
+      <day>1</day>
+     </date>
     </property>
    </widget>
    <widget class="QLabel" name="label">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>30</x>
       <y>20</y>
       <width>291</width>
-      <height>20</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Персональный диапазон дат</string>
+     <string>Персональный диапазон дат:</string>
     </property>
    </widget>
    <widget class="QLabel" name="label_2">
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>60</y>
+      <y>59</y>
       <width>31</width>
-      <height>20</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -86,10 +106,10 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>190</x>
+      <x>220</x>
       <y>60</y>
       <width>41</width>
-      <height>20</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -99,10 +119,10 @@
    <widget class="QPushButton" name="save_but">
     <property name="geometry">
      <rect>
-      <x>20</x>
+      <x>80</x>
       <y>110</y>
-      <width>101</width>
-      <height>23</height>
+      <width>111</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -112,10 +132,10 @@
    <widget class="QPushButton" name="cancel_but">
     <property name="geometry">
      <rect>
-      <x>250</x>
+      <x>280</x>
       <y>110</y>
-      <width>101</width>
-      <height>23</height>
+      <width>111</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">

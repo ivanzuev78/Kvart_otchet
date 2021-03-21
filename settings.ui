@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1116</width>
-    <height>721</height>
+    <width>1170</width>
+    <height>770</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -15,6 +15,12 @@
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>1170</width>
+    <height>770</height>
+   </size>
   </property>
   <property name="font">
    <font>
@@ -29,7 +35,7 @@
     <property name="geometry">
      <rect>
       <x>270</x>
-      <y>630</y>
+      <y>650</y>
       <width>111</width>
       <height>31</height>
      </rect>
@@ -51,9 +57,9 @@
    <widget class="QPushButton" name="move_tema_but">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>260</x>
       <y>100</y>
-      <width>111</width>
+      <width>131</width>
       <height>31</height>
      </rect>
     </property>
@@ -64,9 +70,9 @@
    <widget class="QPushButton" name="remove_tema_but">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>260</x>
       <y>150</y>
-      <width>111</width>
+      <width>131</width>
       <height>31</height>
      </rect>
     </property>
@@ -78,9 +84,9 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>16</y>
+      <y>10</y>
       <width>221</width>
-      <height>20</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -91,9 +97,9 @@
     <property name="geometry">
      <rect>
       <x>400</x>
-      <y>16</y>
+      <y>10</y>
       <width>221</width>
-      <height>20</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -105,7 +111,7 @@
      <rect>
       <x>620</x>
       <y>400</y>
-      <width>131</width>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
@@ -118,7 +124,7 @@
      <rect>
       <x>400</x>
       <y>400</y>
-      <width>191</width>
+      <width>211</width>
       <height>31</height>
      </rect>
     </property>
@@ -128,7 +134,7 @@
      <rect>
       <x>400</x>
       <y>50</y>
-      <width>191</width>
+      <width>211</width>
       <height>331</height>
      </rect>
     </property>
@@ -136,9 +142,9 @@
    <widget class="QListWidget" name="not_official_tems">
     <property name="geometry">
      <rect>
-      <x>620</x>
+      <x>640</x>
       <y>50</y>
-      <width>211</width>
+      <width>251</width>
       <height>331</height>
      </rect>
     </property>
@@ -146,22 +152,22 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>620</x>
-      <y>16</y>
+      <x>660</x>
+      <y>10</y>
       <width>221</width>
-      <height>20</height>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
-     <string>Неофициальные имена тем</string>
+     <string>Неофициальные темы</string>
     </property>
    </widget>
    <widget class="QPushButton" name="del_tema_but">
     <property name="geometry">
      <rect>
-      <x>760</x>
+      <x>770</x>
       <y>400</y>
-      <width>131</width>
+      <width>151</width>
       <height>31</height>
      </rect>
     </property>
@@ -195,9 +201,9 @@
    <widget class="QPushButton" name="ignore_tema_but">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>260</x>
       <y>240</y>
-      <width>111</width>
+      <width>131</width>
       <height>31</height>
      </rect>
     </property>
@@ -213,7 +219,7 @@
    <widget class="QListWidget" name="names_widget">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>920</x>
       <y>50</y>
       <width>231</width>
       <height>151</height>
@@ -223,7 +229,7 @@
    <widget class="QListWidget" name="ignore_name_wg">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>920</x>
       <y>250</y>
       <width>231</width>
       <height>101</height>
@@ -233,7 +239,7 @@
    <widget class="QLabel" name="label_5">
     <property name="geometry">
      <rect>
-      <x>870</x>
+      <x>930</x>
       <y>210</y>
       <width>221</width>
       <height>31</height>
@@ -246,7 +252,7 @@
    <widget class="QLabel" name="label_6">
     <property name="geometry">
      <rect>
-      <x>870</x>
+      <x>930</x>
       <y>10</y>
       <width>221</width>
       <height>31</height>
@@ -259,7 +265,7 @@
    <widget class="QPushButton" name="ignore_name_but">
     <property name="geometry">
      <rect>
-      <x>860</x>
+      <x>920</x>
       <y>350</y>
       <width>121</width>
       <height>31</height>
@@ -277,9 +283,9 @@
    <widget class="QPushButton" name="not_ignor_tema_but">
     <property name="geometry">
      <rect>
-      <x>270</x>
+      <x>260</x>
       <y>290</y>
-      <width>111</width>
+      <width>131</width>
       <height>31</height>
      </rect>
     </property>
@@ -290,7 +296,7 @@
    <widget class="QPushButton" name="not_ignore_name_but">
     <property name="geometry">
      <rect>
-      <x>980</x>
+      <x>1040</x>
       <y>350</y>
       <width>111</width>
       <height>31</height>
@@ -309,8 +315,8 @@
     <property name="geometry">
      <rect>
       <x>400</x>
-      <y>490</y>
-      <width>281</width>
+      <y>510</y>
+      <width>351</width>
       <height>171</height>
      </rect>
     </property>
@@ -321,10 +327,10 @@
    <widget class="QPushButton" name="save_text_but">
     <property name="geometry">
      <rect>
-      <x>870</x>
-      <y>670</y>
-      <width>131</width>
-      <height>23</height>
+      <x>960</x>
+      <y>700</y>
+      <width>171</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -334,9 +340,9 @@
    <widget class="QPlainTextEdit" name="wd_text_of_tema_noname">
     <property name="geometry">
      <rect>
-      <x>710</x>
-      <y>490</y>
-      <width>291</width>
+      <x>780</x>
+      <y>510</y>
+      <width>351</width>
       <height>171</height>
      </rect>
     </property>
@@ -348,9 +354,9 @@
     <property name="geometry">
      <rect>
       <x>410</x>
-      <y>460</y>
-      <width>261</width>
-      <height>16</height>
+      <y>475</y>
+      <width>331</width>
+      <height>21</height>
      </rect>
     </property>
     <property name="text">
@@ -360,10 +366,10 @@
    <widget class="QLabel" name="label_8">
     <property name="geometry">
      <rect>
-      <x>720</x>
-      <y>460</y>
-      <width>261</width>
-      <height>16</height>
+      <x>780</x>
+      <y>469</y>
+      <width>351</width>
+      <height>31</height>
      </rect>
     </property>
     <property name="text">
@@ -373,9 +379,9 @@
    <widget class="QPushButton" name="edit_names_but">
     <property name="geometry">
      <rect>
-      <x>920</x>
+      <x>960</x>
       <y>400</y>
-      <width>171</width>
+      <width>191</width>
       <height>31</height>
      </rect>
     </property>

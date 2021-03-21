@@ -70,7 +70,12 @@ class Sintez(Shablon):
         if isinstance(mass, (int, float)):
             self.mass = mass
         else:
-            self.mass = 0
+            try:
+                self.mass = float(mass)
+                if self.mass < 0:
+                    raise ValueError
+            except ValueError:
+                self.mass = 0
         self.komponent = komponent
         self.markirovka = tema + komponent + str(self.mass)
         self.base_tema = tema
@@ -85,10 +90,10 @@ class Cunductor:
         self,
         date_start=None,
         date_end=None,
-        svodnaya_name_file=r"//192.168.1.3/ovnt/Списки/Пленки/Сводная таблица.xlsm",
-        production_name_file=r"//192.168.1.3/ovnt/Списки/Образцы продукции/Общий перечень продукции ОВНТ.xlsx",
-        report_name_file=r"//192.168.1.3/ovnt/Отчеты/Общий перечень отчётов.xlsm",
-        sintez_name_file=r"//192.168.1.3/ovnt/Списки/Список синтезов.xlsx",
+        svodnaya_name_file="Не указано",
+        production_name_file="Не указано",
+        report_name_file="Не указано",
+        sintez_name_file="Не указано",
     ):
 
         self.thin_border = Border(
@@ -137,16 +142,7 @@ class Cunductor:
         self.all_data = []  # Список всех данных. Объекты класса Shablon
 
         # Список имен для замены в Общем перечне отчётов ОВНТ
-        self.good_names = {
-            "Катя": "Шаповал Е.С.",
-            "Женя": "Гусева Е.Н.",
-            "Дима": "Пихуров Д.В.",
-            "Вова": "Васильев В.А.",
-            "Иван": "Зуев И.А.",
-            "Артур": "Калимуллин А.В.",
-            "Павел": "Пирожников П.Б.",
-            "Настя": "Калганова А.И.",
-        }
+        self.good_names = {}
 
     @property
     def date_start(self):
@@ -181,7 +177,7 @@ class Cunductor:
             return True
         elif isinstance(date, str):
             try:
-                date = datetime.datetime(int(date[6:]), int(date[3:5]), int(date[:2]))
+                datetime.datetime(int(date[6:]), int(date[3:5]), int(date[:2]))
                 return True
             except:
                 return False
@@ -195,7 +191,6 @@ class Cunductor:
         :return: bool
         """
         if isinstance(date, str):
-            print(date)
             try:
                 date = datetime.datetime(int(date[6:]), int(date[3:5]), int(date[:2]))
             except:
@@ -270,24 +265,26 @@ class Cunductor:
                     isinstance(row[type_naneseniya_col], str)
                     and "аборатор" in row[type_naneseniya_col]
                 ):
-                    current_plenka = Plenka(
-                        row[date_col],
-                        row[author_col],
-                        row[tema_col],
-                        row[markirovka_col],
+                    self.all_data.append(
+                        Plenka(
+                            row[date_col],
+                            row[author_col],
+                            row[tema_col],
+                            row[markirovka_col],
+                        )
                     )
-                    self.all_data.append(current_plenka)
                 elif (
                     isinstance(row[type_naneseniya_col], str)
                     and "ромыш" in row[type_naneseniya_col]
                 ):
-                    current_nanesenie = Nanesenie(
-                        row[date_col],
-                        row[author_col],
-                        row[tema_col],
-                        row[markirovka_col],
+                    self.all_data.append(
+                        Nanesenie(
+                            row[date_col],
+                            row[author_col],
+                            row[tema_col],
+                            row[markirovka_col],
+                        )
                     )
-                    self.all_data.append(current_nanesenie)
 
     # Обработка данных из перечня отчётов
     def report_count(
@@ -314,15 +311,16 @@ class Cunductor:
                 )  # Форматируем ФИО по шаблону
                 if row[nomer_otcheta_col]:  # Если есть номер отчёта
                     # Создаём отчет
-                    current_otchet = Otchet(
-                        row[date_col],
-                        row[author_col],
-                        row[tema_col],
-                        row[nomer_otcheta_col],
-                    )
                     # self.check_worker(row[author_col])
                     # self.workers[row[author_col]].otcheti.append(current_otchet)
-                    self.all_data.append(current_otchet)
+                    self.all_data.append(
+                        Otchet(
+                            row[date_col],
+                            row[author_col],
+                            row[tema_col],
+                            row[nomer_otcheta_col],
+                        )
+                    )
 
     # Обработка данных из общего перечня продукции ОВНТ
     def production_count(self, tabl: opx.Workbook.active, name: str) -> None:
@@ -360,10 +358,9 @@ class Cunductor:
                 row[tema_col] = str(row[tema_col])
             if self.check_date_type(row[date_col]):
                 if row[tema_col]:  # Если клетка с темой не пустая
-                    current_obrazec = Obrazec(
-                        row[date_col], name, row[tema_col], row[mark_col]
+                    self.all_data.append(
+                        Obrazec(row[date_col], name, row[tema_col], row[mark_col])
                     )
-                    self.all_data.append(current_obrazec)
 
     def sintez_count(
         self, tabl, tema_col=0, sostav_col=2, date_col=5, mass_col=6, author_col=8
@@ -469,27 +466,6 @@ class Cunductor:
             self.production_count(self.production_ws[name], self.input_name(name))
         self.sintez_count(self.sintez_ws)
 
-    def main_run(self, read_xl=True):
-        """
-        Запускает считывание файлов и обрабатывает данные
-        :param read_xl: bool - Требудется ли считывать файлы эксель
-        :return:
-        """
-        if (
-            self.sintez_ws
-            and self.report_ws
-            and self.svod_tabl_ws
-            and self.production_ws
-            and read_xl
-        ):
-            read_xl = False
-        if read_xl:
-            self.reader()
-        self.counter()
-
-    def debug(self):
-        pass
-
     def sort_data(self):
         """
         Смотрит кучу файлов и распределяет их по темам
@@ -497,6 +473,8 @@ class Cunductor:
         """
         self.thems = {}
         self.all_thems = []
+        self.current_ignor_tema = []
+        self.names = []
         for itemx in self.all_data:
             item = deepcopy(itemx)
             if not self.check_date(item.date):
@@ -533,10 +511,11 @@ class Cunductor:
         current_prefix = ""
         current_numb = -1
         first_numb = -1
-        for word in massiv:
+        sorted_massiv = sorted(massiv, key=lambda x: x.markirovka)
+        for word in sorted_massiv:
             word_prefix = ""
             word_numb = ""
-            for b in word:
+            for b in word.markirovka:
                 if b.isdigit():
                     word_numb += b
                 else:
@@ -546,7 +525,7 @@ class Cunductor:
                 and int(current_numb) == int(word_numb) - 1
             ):
                 current_numb = word_numb
-                if word == massiv[-1]:
+                if word == sorted_massiv[-1]:
                     if current_numb != first_numb:
                         fine.append(f"{current_prefix}{first_numb}-{current_numb}")
                     else:
@@ -560,7 +539,7 @@ class Cunductor:
                 current_prefix = word_prefix
                 first_numb = word_numb
                 current_numb = first_numb
-                if word == massiv[-1] and current_prefix:
+                if word == sorted_massiv[-1] and current_prefix:
                     if current_numb != first_numb:
                         fine.append(f"{current_prefix}{first_numb}-{current_numb}")
                     else:
@@ -928,7 +907,6 @@ class Tema:
         self.tema_name = tema_name
         self.old_name = None
         self.workers = {}
-        self.nonworker = Worker(tema_name)
         self.text_with_names = ""
         self.text_no_names = ""
         self.total_obraz = 0
@@ -948,27 +926,22 @@ class Tema:
 
         if type(item) == Plenka:
             self.workers[item.author].plenki.append(item)
-            self.nonworker.plenki.append(item)
             self.total_obraz += 1
 
         elif type(item) == Otchet:
             self.workers[item.author].otcheti.append(item)
-            self.nonworker.otcheti.append(item)
             self.total_otchet += 1
 
         elif type(item) == Obrazec:
             self.workers[item.author].obrazci.append(item)
-            self.nonworker.obrazci.append(item)
             self.total_obraz += 1
 
         elif type(item) == Nanesenie:
             self.workers[item.author].naneseniya.append(item)
-            self.nonworker.naneseniya.append(item)
             self.total_nanesenie += 1
 
         elif type(item) == Sintez:
             self.workers[item.author].sinthesis.append(item)
-            self.nonworker.sinthesis.append(item)
             self.total_sintes_count += 1
             self.total_sintes_mass += item.mass
             self.total_sintes_mass = self.total_sintes_mass * 1000000 // 1000 / 1000
@@ -1044,7 +1017,3 @@ class SintezCounter:
 
     def return_all(self):
         return self.summ_mass, self.summ_sintes
-
-
-if __name__ == "__main__":
-    pass
