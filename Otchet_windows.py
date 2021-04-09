@@ -28,7 +28,6 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
         self.setupUi(self)
         self.counductor = Cunductor()
         self.read_xl = True
-
         self.year_numb = None
         self.kvartal_numb = None
         self.window = None
@@ -83,7 +82,6 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
     def change_date_window(self):
         if not self.date_window:
             self.date_window = DateWindow(self)
-
         self.setEnabled(False)
         self.date_window.show()
 
@@ -118,17 +116,14 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
             for process, text in self.counductor.reader():
                 self.progressBar.setValue(process)
                 self.current_action.setText(text)
-
             self.current_action.setText("Данные считаны")
             self.update_it()
 
     # Кнопка "Обновить данные"
     def update_it(self):
-
         self.update_date()
         self.counductor.counter()
         self.counductor.sort_data()
-
         self.show_data.setRowCount(len(self.counductor.thems))
         for row, tema in enumerate(self.counductor.thems):
             self.show_data.setItem(row, 0, QTableWidgetItem(f"{tema}"))
@@ -158,7 +153,6 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
                 ),
             )
             self.progressBar.setValue(100)
-
         self.show_data.resizeColumnsToContents()
 
     # Функция считывания обновления дат
@@ -205,9 +199,7 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
         if os.path.exists("settings.json"):
             try:
                 with open("settings.json", "r") as f:
-
                     to_load = json.load(f)
-
                     self.counductor.ignor_tema = to_load["ignor_tema"]
                     self.counductor.ignor_names = to_load["ignor_names"]
                     self.counductor.text_of_tema_noname = to_load["text_of_tema_noname"]
@@ -221,7 +213,6 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
                     self.counductor.sintez_name_file = to_load["sintez_name_file"]
                     self.counductor.thems_replased = to_load["thems_replased"]
                     self.counductor.good_names = to_load["good_names"]
-
             except:
                 self.error_dialog = QtWidgets.QErrorMessage()
                 self.error_dialog.showMessage(
@@ -239,12 +230,10 @@ class MainWindow(QtWidgets.QMainWindow, uic.loadUiType("main_window.ui")[0]):
             self.year.setDate(QDate(localtime()[0], 1, 1))
         else:
             self.year.setDate(QDate(localtime()[0] - 1, 1, 1))
-
         data1 = struct_time((localtime()[0], 2, 1, 1, 1, 1, 1, 1, 1))
         data2 = struct_time((localtime()[0], 5, 1, 1, 1, 1, 1, 1, 1))
         data3 = struct_time((localtime()[0], 8, 1, 1, 1, 1, 1, 1, 1))
         data4 = struct_time((localtime()[0], 11, 1, 1, 1, 1, 1, 1, 1))
-
         if data1 <= localtime() < data2:
             self.kvartal.setCurrentIndex(0)
         elif data2 <= localtime() < data3:
@@ -280,7 +269,6 @@ class SettingsWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
         super(SettingsWindow, self).__init__()
         self.setupUi(self)
         self.edit_names_window = None
-
         self.close_but.clicked.connect(self.close)
         self.tema_add_But.clicked.connect(self.add_global_tema)
         self.move_tema_but.clicked.connect(self.move_tema)
@@ -330,26 +318,20 @@ class SettingsWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
         for tema in sorted(self.main_window.counductor.thems):
             if tema in self.main_window.counductor.ignor_tema:
                 continue
-
             for thema_replased in self.main_window.counductor.thems_replased:
                 if tema in thema_replased:
                     continue
-
             if tema in self.main_window.counductor.global_tems:
                 continue
-
             self.unkown_tema.addItem(tema)
-
         for globa_tema in self.main_window.counductor.global_tems:
             self.official_tems.addItem(globa_tema)
-
         for ignor_tema in self.main_window.counductor.current_ignor_tema:
             if ignor_tema in self.main_window.counductor.all_thems:
                 self.ignore_tems.addItem(ignor_tema)
 
     # Заполняет окно с именами
     def update_names(self):
-
         local_list_of_names = []
         for name in self.main_window.counductor.names:
             if name in self.main_window.counductor.ignor_names:
@@ -381,7 +363,6 @@ class SettingsWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
                 self.main_window.counductor.ignor_names.index(ignor_name)
             ]
             self.names_widget.addItem(ignor_name)
-
         except:
             pass
 
@@ -422,7 +403,6 @@ class SettingsWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
             global_tema = self.tema_add_line.text()
             self.official_tems.addItem(global_tema)
             self.main_window.counductor.global_tems[global_tema] = []
-
         self.tema_add_line.setText("")
 
     # Удаляет глобальную тему
@@ -434,13 +414,10 @@ class SettingsWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
                 if tema_to_del == self.main_window.counductor.thems_replased[tema]:
                     self.unkown_tema.addItem(tema)
                     del self.main_window.counductor.thems_replased[tema]
-
                 if tema_to_del in self.main_window.counductor.text_of_tema:
                     del self.main_window.counductor.text_of_tema[tema_to_del]
-
                 if tema_to_del in self.main_window.counductor.text_of_tema_noname:
                     del self.main_window.counductor.text_of_tema_noname[tema_to_del]
-
             del self.main_window.counductor.global_tems[tema_to_del]
 
     # Перемещает тему в список глобальных тем
@@ -454,7 +431,6 @@ class SettingsWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
                 self.main_window.counductor.thems_replased[tema_fly] = global_tema
                 self.main_window.counductor.global_tems[global_tema].append(tema_fly)
                 self.update_not_official_tems()
-
         except:
             pass
 
@@ -466,9 +442,7 @@ class SettingsWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
                 tema_fly = self.not_official_tems.takeItem(
                     self.not_official_tems.currentRow()
                 ).text()
-
                 del self.main_window.counductor.thems_replased[tema_fly]
-
                 self.main_window.counductor.global_tems[global_tema].pop(
                     self.main_window.counductor.global_tems[global_tema].index(tema_fly)
                 )
@@ -482,9 +456,7 @@ class SettingsWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
         try:
             while self.not_official_tems.takeItem(0):
                 pass
-
             global_tema = self.official_tems.selectedItems()[0].text()
-
             if global_tema:
                 for tema in self.main_window.counductor.global_tems[global_tema]:
                     if tema in self.main_window.counductor.all_thems:
@@ -496,7 +468,6 @@ class SettingsWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
                     )
                 else:
                     self.wd_text_of_tema.setPlainText("")
-
                 if global_tema in self.main_window.counductor.text_of_tema_noname:
                     self.wd_text_of_tema_noname.setPlainText(
                         self.main_window.counductor.text_of_tema_noname[global_tema]
@@ -508,7 +479,6 @@ class SettingsWindow(QtWidgets.QMainWindow, uic.loadUiType("settings.ui")[0]):
 
     # Сохраняет текст к глобальной теме
     def save_text(self):
-
         if self.official_tems.selectedItems():
             if self.wd_text_of_tema.toPlainText():
                 self.main_window.counductor.text_of_tema[
@@ -538,7 +508,6 @@ class ChooseFileWindow(QtWidgets.QMainWindow, uic.loadUiType("choose_file.ui")[0
         self.choose_prod_wg.clicked.connect(self.choose_file("prod"))
         self.choose_otchet_wg.clicked.connect(self.choose_file("otchet"))
         self.choose_sintez_wg.clicked.connect(self.choose_file("sintez"))
-
         self.close_but.clicked.connect(self.close)
 
         # Прописываем текущие местоположения файлов в поля рядом с кнопками
@@ -586,7 +555,6 @@ class DateWindow(QtWidgets.QMainWindow, uic.loadUiType("change_date.ui")[0]):
         super(DateWindow, self).__init__()
         self.setupUi(self)
         self.save_but.clicked.connect(self.save_date)
-
         self.start_date_numb = [2020, 1, 1]
         self.end_date_numb = [2020, 12, 31]
 
@@ -603,7 +571,6 @@ class DateWindow(QtWidgets.QMainWindow, uic.loadUiType("change_date.ui")[0]):
         ]
         self.main_window.update_date()
         self.close()
-
         pass
 
     def closeEvent(self, a0: QtGui.QCloseEvent) -> None:
@@ -630,7 +597,6 @@ class EditNameWindow(QtWidgets.QMainWindow, uic.loadUiType("edit_names.ui")[0]):
             )
         else:
             self.all_names_widget.setRowCount(names_len)
-
         for row, name in enumerate(
             self.settings_window.main_window.counductor.good_names
         ):
@@ -648,7 +614,6 @@ class EditNameWindow(QtWidgets.QMainWindow, uic.loadUiType("edit_names.ui")[0]):
             pass
         while self.good_names.takeItem(0):
             pass
-
         for name in self.settings_window.main_window.counductor.names:
             if name not in self.settings_window.main_window.counductor.ignor_names:
                 self.bad_names.addItem(
@@ -665,10 +630,8 @@ class EditNameWindow(QtWidgets.QMainWindow, uic.loadUiType("edit_names.ui")[0]):
             bad_name = self.bad_names.selectedItems()[0].text()
         except Exception:
             return None
-
         if good_name == bad_name:
             return None
-
         self.fill_table(names_len=numb_of_names_now + 1)
         self.all_names_widget.setItem(
             numb_of_names_now, 0, QTableWidgetItem(f"{bad_name}")

@@ -310,9 +310,6 @@ class Cunductor:
                     row[author_col]
                 )  # Форматируем ФИО по шаблону
                 if row[nomer_otcheta_col]:  # Если есть номер отчёта
-                    # Создаём отчет
-                    # self.check_worker(row[author_col])
-                    # self.workers[row[author_col]].otcheti.append(current_otchet)
                     self.all_data.append(
                         Otchet(
                             row[date_col],
@@ -479,21 +476,16 @@ class Cunductor:
             item = deepcopy(itemx)
             if not self.check_date(item.date):
                 continue
-
             if item.tema not in self.all_thems:
                 self.all_thems.append(item.tema)
-
             if item.author not in self.names:
                 self.names.append(item.author)
-
             if item.tema in self.ignor_tema:
                 if item.tema not in self.current_ignor_tema:
                     self.current_ignor_tema.append(item.tema)
                 continue
-
             elif item.author in self.ignor_names:
                 continue
-
             if item.tema in self.thems_replased:
                 item.tema = self.thems_replased[item.tema]
             if item.tema not in self.thems:
@@ -646,9 +638,6 @@ class Cunductor:
                 sum_nanesenie = len(self.thems[tema].workers[name].naneseniya)
                 total_nanesenie += sum_nanesenie
                 current_list_to_append = [name]
-
-                # current_list_to_append.append('')  # Добавление опытно-проммышленных партий
-
                 sintez_counter = SintezCounter()
                 for i in self.thems[tema].workers[name].sinthesis:
                     sintez_counter.add_sintez(i)
@@ -656,7 +645,6 @@ class Cunductor:
                 total_sintes_count += sintez_counter.return_all()[1]
                 cell = sintez_counter.str_one_tema()
                 current_list_to_append.append(cell)
-
                 cell = ""
                 for i in self.short_show(
                     self.thems[tema].workers[name].plenki
@@ -665,17 +653,13 @@ class Cunductor:
                 if cell:
                     cell = cell[:-2]
                     cell += f"\n\nИтого: " + self.okonchanie("образец", sum_obraz)
-
                 current_list_to_append.append(cell)  # Добавление образцов и плёнок
-
                 cell = ""
-
                 for i in self.short_show_report(self.thems[tema].workers[name].otcheti):
                     cell += f"{i}, "
                 if cell:
                     cell = cell[:-2]
                     cell += f"\n\nИтого: " + self.okonchanie("отчёт", sum_otchet)
-
                 current_list_to_append.append(cell)  # Добавление отчётов
 
                 current_list_to_append.append(
@@ -688,14 +672,10 @@ class Cunductor:
                 if cell:
                     cell = cell[:-2]
                     cell += f"\n\nИтого: " + self.okonchanie("нанесение", sum_nanesenie)
-
                 current_list_to_append.append(cell)  # Добавление нанесения
-
                 ws.append(current_list_to_append)
                 ws_count_row.append(True)
-
             total_string = ["ИТОГО"]
-
             if total_sintes_count:
                 total_string.append(
                     self.okonchanie("синтез", total_sintes_count)
@@ -703,28 +683,21 @@ class Cunductor:
                 )
             else:
                 total_string.append("")
-
             if total_obraz:
                 total_string.append(self.okonchanie("образец", total_obraz))
             else:
                 total_string.append("")
-
             if total_otchet:
                 total_string.append(self.okonchanie("отчёт", total_otchet))
             else:
                 total_string.append("")
-
             total_string.append("")
-
             if total_nanesenie:
                 total_string.append(self.okonchanie("нанесение", total_nanesenie))
             else:
                 total_string.append("")
-
             ws.append(total_string)
-
             ws_count_row.append(True)
-
             for _ in range(2):
                 ws.append([" "])
                 ws_count_row.append(False)
@@ -742,7 +715,6 @@ class Cunductor:
                     ws.merge_cells(f"A{row_numb}:F{row_numb}")
                     if not chek_bold:
                         chek_bold = True
-
         ws.page_setup.paperSize = "9"
         ws.page_setup.orientation = ws.ORIENTATION_LANDSCAPE
         ws.column_dimensions["A"].width = 18
@@ -790,20 +762,16 @@ class Cunductor:
             )
         ws.merge_cells(f"A1:F1")  # Объеди
         ws.append(ws_title)
-
         for ind in range(6):
             cell = ws[f"{chr(65 + ind)}2"]
             cell.font = Font(bold=True)
-
         ws_count_row = []
-
         for tema in self.thems:
             current_list_to_append = []
             if tema in self.text_of_tema_noname:
                 current_list_to_append.insert(0, self.text_of_tema_noname[tema])
             else:
                 current_list_to_append.insert(0, tema)
-
             cell_sintez = ""
             cell_obrazec = ""
             cell_otchet = ""
@@ -811,7 +779,6 @@ class Cunductor:
             cell_nanesenie = ""
             sum_mass = 0
             sum_sintez = 0
-
             for name in self.thems[tema].workers:
                 sintez_counter = SintezCounter()
                 for i in self.thems[tema].workers[name].sinthesis:
@@ -819,51 +786,36 @@ class Cunductor:
                 cell_sintez += str(sintez_counter)
                 sum_mass += sintez_counter.summ_mass
                 sum_sintez += sintez_counter.summ_sintes
-
                 for i in self.short_show(
                     self.thems[tema].workers[name].plenki
                 ) + self.short_show(self.thems[tema].workers[name].obrazci):
                     cell_obrazec += f"{i}, "
-
                 for i in self.short_show_report(self.thems[tema].workers[name].otcheti):
                     cell_otchet += f"{i}, "
-
                 for i in self.short_show(self.thems[tema].workers[name].naneseniya):
                     cell_nanesenie += f"{i}, "
-
             if cell_sintez:
                 cell_sintez += (
                     f"\nИтого: "
                     + self.okonchanie("синтез", sum_sintez)
                     + f", {sum_mass} кг"
                 )
-
             if cell_obrazec:
                 cell_obrazec = cell_obrazec[:-2]
                 cell_obrazec += f"\n\nИтого: " + self.okonchanie(
                     "образец", self.thems[tema].total_obraz
                 )
-
             if cell_otchet:
                 cell_otchet = cell_otchet[:-2]
                 cell_otchet += f"\n\nИтого: " + self.okonchanie(
                     "отчёт", self.thems[tema].total_otchet
                 )
-
             if cell_nanesenie:
                 cell_nanesenie = cell_nanesenie[:-2]
                 cell_nanesenie += f"\n\nИтого: " + self.okonchanie(
                     "нанесение", self.thems[tema].total_nanesenie
                 )
-
             current_list_to_append.append(cell_sintez)
-
-            # if cell_sintez:
-            #     current_list_to_append.append(self.okonchanie('синтез', self.thems[tema].total_sintes_count) +
-            #                         f', {self.thems[tema].total_sintes_mass} кг')
-            # else:
-            #     current_list_to_append.append('')
-
             current_list_to_append.append(cell_obrazec)
             current_list_to_append.append(cell_otchet)
             current_list_to_append.append(cell_receptura)
@@ -970,7 +922,6 @@ class SintezCounter:
                 "mass": sintez.mass,
                 "count": 1,
             }
-
         else:
             self.tema[sintez.base_tema][sintez.komponent]["mass"] += sintez.mass
             self.tema[sintez.base_tema][sintez.komponent]["count"] += 1
@@ -996,10 +947,6 @@ class SintezCounter:
         return str_to_return
 
     def str_one_tema(self):
-        """
-
-        :return:
-        """
         str_to_return = ""
         for tema in self.tema:
             for komponent in self.tema[tema]:
